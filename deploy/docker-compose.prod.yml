@@ -1,0 +1,71 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# StockSage India — production stack for an always-on VM (Oracle Ampere ARM).
+#
+#   cd deploy && docker compose -f docker-compose.prod.yml up -d --build
+#
+# Caddy terminates TLS with a real Let's Encrypt certificate (automatic, no
+# manual certbot), and is the only service exposed to the internet. Postgres
+# and the app talk over the internal network and publish no host ports.
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: stocksage
+      POSTGRES_USER: stocksage
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in deploy/.env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Applied once, on the very first start of an empty data volume.
+      - ../database/deploy.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stocksage -d stocksage"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://stocksage:${POSTGRES_PASSWORD}@postgres:5432/stocksage
+      DATABASE_URL_SYNC: postgresql://stocksage:${POSTGRES_PASSWORD}@postgres:5432/stocksage
+      AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET in deploy/.env}
+      # This VM never sleeps, so the real IST cron jobs are back on.
+      ENABLE_SCHEDULER: "true"
+      SERVE_FRONTEND: "true"
+      USE_GPU: "false"
+      TZ: Asia/Kolkata
+      # Same-origin behind Caddy, so no cross-origin allowance is needed.
+      CORS_ORIGINS: https://${DOMAIN}
+    volumes:
+      # Saved multi-backtest runs would otherwise vanish on every restart.
+      - jobhistory:/app/job_history
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in deploy/.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data      # certificates live here — keep this volume
+      - caddyconfig:/config
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  jobhistory:
+  caddydata:
+  caddyconfig:

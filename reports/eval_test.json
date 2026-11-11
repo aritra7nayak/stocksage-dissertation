@@ -1,0 +1,384 @@
+{
+  "generated_at": "2026-11-11T01:53:16+00:00",
+  "gold": "data/corpus/labelled.jsonl",
+  "gold_sha256": "1c80640457050801a1000f547b35fcd00ad65928d3efb7f1a3fb6ecbc37c8b7a",
+  "test_fingerprint": "a68366fafbbef7a460b554826c3f04194137b6954920daa6ce53b08b892e74d2",
+  "test_complete": false,
+  "split": "test",
+  "n": 123,
+  "E1": {
+    "keyword": {
+      "macro_f1": {
+        "point": 0.2953,
+        "low": 0.2198,
+        "high": 0.3692,
+        "n_boot": 2000
+      },
+      "accuracy": 0.4797,
+      "per_class": {
+        "negative": {
+          "precision": 0.6667,
+          "recall": 0.1538,
+          "f1": 0.25,
+          "support": 26
+        },
+        "neutral": {
+          "precision": 0.4701,
+          "recall": 0.9821,
+          "f1": 0.6358,
+          "support": 56
+        },
+        "positive": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 41
+        }
+      },
+      "confusion": {
+        "labels": [
+          "negative",
+          "neutral",
+          "positive"
+        ],
+        "matrix": [
+          [
+            4,
+            22,
+            0
+          ],
+          [
+            1,
+            55,
+            0
+          ],
+          [
+            1,
+            40,
+            0
+          ]
+        ]
+      }
+    },
+    "finbert_generic": {
+      "macro_f1": {
+        "point": 0.7046,
+        "low": 0.6143,
+        "high": 0.7857,
+        "n_boot": 2000
+      },
+      "accuracy": 0.7154,
+      "per_class": {
+        "negative": {
+          "precision": 0.6667,
+          "recall": 0.6923,
+          "f1": 0.6792,
+          "support": 26
+        },
+        "neutral": {
+          "precision": 0.7679,
+          "recall": 0.7679,
+          "f1": 0.7679,
+          "support": 56
+        },
+        "positive": {
+          "precision": 0.675,
+          "recall": 0.6585,
+          "f1": 0.6667,
+          "support": 41
+        }
+      },
+      "confusion": {
+        "labels": [
+          "negative",
+          "neutral",
+          "positive"
+        ],
+        "matrix": [
+          [
+            18,
+            2,
+            6
+          ],
+          [
+            6,
+            43,
+            7
+          ],
+          [
+            3,
+            11,
+            27
+          ]
+        ]
+      }
+    },
+    "finbert_in": {
+      "macro_f1": {
+        "point": 0.7348,
+        "low": 0.6492,
+        "high": 0.8155,
+        "n_boot": 2000
+      },
+      "accuracy": 0.748,
+      "per_class": {
+        "negative": {
+          "precision": 0.8095,
+          "recall": 0.6538,
+          "f1": 0.7234,
+          "support": 26
+        },
+        "neutral": {
+          "precision": 0.7313,
+          "recall": 0.875,
+          "f1": 0.7967,
+          "support": 56
+        },
+        "positive": {
+          "precision": 0.7429,
+          "recall": 0.6341,
+          "f1": 0.6842,
+          "support": 41
+        }
+      },
+      "confusion": {
+        "labels": [
+          "negative",
+          "neutral",
+          "positive"
+        ],
+        "matrix": [
+          [
+            17,
+            5,
+            4
+          ],
+          [
+            2,
+            49,
+            5
+          ],
+          [
+            2,
+            13,
+            26
+          ]
+        ]
+      },
+      "vs_finbert_generic": {
+        "mcnemar": {
+          "b": 15,
+          "c": 19,
+          "chi2": 0.2647,
+          "p_value": 0.606905
+        },
+        "paired_bootstrap_macro_f1": {
+          "delta": 0.0302,
+          "low": -0.0675,
+          "high": 0.1222,
+          "p_not_better": 0.2695
+        }
+      }
+    },
+    "deberta_in": {
+      "macro_f1": {
+        "point": 0.825,
+        "low": 0.7521,
+        "high": 0.889,
+        "n_boot": 2000
+      },
+      "accuracy": 0.8211,
+      "per_class": {
+        "negative": {
+          "precision": 1.0,
+          "recall": 0.7692,
+          "f1": 0.8696,
+          "support": 26
+        },
+        "neutral": {
+          "precision": 0.7536,
+          "recall": 0.9286,
+          "f1": 0.832,
+          "support": 56
+        },
+        "positive": {
+          "precision": 0.8529,
+          "recall": 0.7073,
+          "f1": 0.7733,
+          "support": 41
+        }
+      },
+      "confusion": {
+        "labels": [
+          "negative",
+          "neutral",
+          "positive"
+        ],
+        "matrix": [
+          [
+            20,
+            5,
+            1
+          ],
+          [
+            0,
+            52,
+            4
+          ],
+          [
+            0,
+            12,
+            29
+          ]
+        ]
+      },
+      "vs_finbert_generic": {
+        "mcnemar": {
+          "b": 11,
+          "c": 24,
+          "chi2": 4.1143,
+          "p_value": 0.042522
+        },
+        "paired_bootstrap_macro_f1": {
+          "delta": 0.1204,
+          "low": 0.0202,
+          "high": 0.2206,
+          "p_not_better": 0.009
+        }
+      }
+    }
+  },
+  "E2": {
+    "keyword": {
+      "micro_f1": 0.3614,
+      "macro_f1": 0.1425,
+      "per_label": {
+        "regulatory_action": {
+          "precision": 1.0,
+          "recall": 0.1429,
+          "f1": 0.25,
+          "support": 7
+        },
+        "fraud_default": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1
+        },
+        "monetary_policy": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        },
+        "earnings_guidance": {
+          "precision": 1.0,
+          "recall": 0.1333,
+          "f1": 0.2353,
+          "support": 15
+        },
+        "corporate_action": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 28
+        },
+        "macro_geopolitical": {
+          "precision": 0.6667,
+          "recall": 0.0833,
+          "f1": 0.1481,
+          "support": 24
+        },
+        "flows": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 6
+        },
+        "other": {
+          "precision": 0.3419,
+          "recall": 0.9756,
+          "f1": 0.5063,
+          "support": 41
+        }
+      },
+      "false_market_halt_rate": 0.0246,
+      "missed_severe_rate": 1.0,
+      "severity_macro_f1": 0.2571
+    },
+    "deberta_events": {
+      "micro_f1": 0.7149,
+      "macro_f1": 0.4427,
+      "per_label": {
+        "regulatory_action": {
+          "precision": 0.5,
+          "recall": 0.4286,
+          "f1": 0.4615,
+          "support": 7
+        },
+        "fraud_default": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1
+        },
+        "monetary_policy": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        },
+        "earnings_guidance": {
+          "precision": 0.7143,
+          "recall": 1.0,
+          "f1": 0.8333,
+          "support": 15
+        },
+        "corporate_action": {
+          "precision": 0.88,
+          "recall": 0.7857,
+          "f1": 0.8302,
+          "support": 28
+        },
+        "macro_geopolitical": {
+          "precision": 0.6667,
+          "recall": 0.6667,
+          "f1": 0.6667,
+          "support": 24
+        },
+        "flows": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 6
+        },
+        "other": {
+          "precision": 0.7021,
+          "recall": 0.8049,
+          "f1": 0.75,
+          "support": 41
+        }
+      }
+    }
+  },
+  "E3": {
+    "substring": {
+      "precision": 0.1971,
+      "recall": 0.4286,
+      "f1": 0.27,
+      "misattribution_rate": 0.2846,
+      "headlines": 123,
+      "gold_links": 63,
+      "predicted_links": 137
+    },
+    "entity_linker": {
+      "precision": 0.8,
+      "recall": 0.5714,
+      "f1": 0.6667,
+      "misattribution_rate": 0.065,
+      "headlines": 123,
+      "gold_links": 63,
+      "predicted_links": 45
+    }
+  }
+}

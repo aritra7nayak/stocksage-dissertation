@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme tokens ─────────────────────────────────────────────────────────
+   Subtle palette. Dark = deep indigo-slate. Light = cool paper. Accents stay
+   constant so signal colors read on both.                                    */
+:root,
+.light {
+  --bg: 244 246 251;
+  --surface: 255 255 255;
+  --elevated: 248 250 254;
+  --ink: 24 31 51;
+  --muted: 110 122 153;
+  --line: 18 28 56;
+  --line-a: 0.1;
+  --aurora-1: 91 141 239;
+  --aurora-2: 22 199 132;
+  --grain: 0.015;
+}
+.dark {
+  --bg: 9 12 22;
+  --surface: 16 21 38;
+  --elevated: 22 28 50;
+  --ink: 233 240 255;
+  --muted: 124 140 178;
+  --line: 255 255 255;
+  --line-a: 0.08;
+  --aurora-1: 91 141 239;
+  --aurora-2: 22 199 132;
+  --grain: 0.03;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; min-height: 100vh; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  color: rgb(var(--ink));
+  background: rgb(var(--bg));
+  overflow-x: hidden;
+}
+
+/* Animated aurora field — the ambient "living market" backdrop */
+.aurora {
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  filter: blur(70px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.aurora span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+}
+.dark .aurora { opacity: 0.4; }
+.light .aurora { opacity: 0.32; }
+.aurora .a1 {
+  width: 46vw; height: 46vw; left: 58%; top: -8%;
+  background: radial-gradient(circle, rgb(var(--aurora-1)) 0%, transparent 68%);
+  animation: drift1 22s ease-in-out infinite;
+}
+.aurora .a2 {
+  width: 40vw; height: 40vw; left: -6%; top: 52%;
+  background: radial-gradient(circle, rgb(var(--aurora-2)) 0%, transparent 68%);
+  animation: drift2 27s ease-in-out infinite;
+}
+.aurora .a3 {
+  width: 32vw; height: 32vw; left: 30%; top: 70%;
+  background: radial-gradient(circle, #8B7CF6 0%, transparent 70%);
+  animation: drift3 32s ease-in-out infinite;
+}
+@keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-7%,6%) scale(1.12)} }
+@keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(8%,-5%) scale(1.18)} }
+@keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-5%,-7%) scale(1.1)} }
+
+@layer components {
+  .glass {
+    background: rgb(var(--surface) / 0.7);
+    backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgb(var(--line) / var(--line-a));
+    border-radius: 20px;
+  }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgb(var(--muted));
+  }
+  .num { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+}
+
+@layer utilities {
+  /* 3D tilt scaffolding */
+  .scene { perspective: 1200px; }
+  .preserve-3d { transform-style: preserve-3d; }
+  .glow-brand { box-shadow: 0 0 26px rgb(91 141 239 / 0.28), inset 0 0 0 1px rgb(91 141 239 / 0.25); }
+  .glow-buy { box-shadow: 0 0 26px rgb(22 199 132 / 0.3), inset 0 0 0 1px rgb(22 199 132 / 0.32); }
+  .glow-sell { box-shadow: 0 0 26px rgb(240 82 107 / 0.3), inset 0 0 0 1px rgb(240 82 107 / 0.32); }
+  .glow-hold { box-shadow: 0 0 26px rgb(242 169 59 / 0.28), inset 0 0 0 1px rgb(242 169 59 / 0.3); }
+  .sheen {
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.14) 50%, transparent 70%);
+    background-size: 220% 100%;
+    animation: sheen 3.2s ease-in-out infinite;
+  }
+}
+@keyframes sheen { 0%{background-position:220% 0} 100%{background-position:-120% 0} }
+
+@keyframes pulse-ring {
+  0%{box-shadow:0 0 0 0 rgb(22 199 132 / 0.5)} 70%{box-shadow:0 0 0 9px rgb(22 199 132 / 0)} 100%{box-shadow:0 0 0 0 rgb(22 199 132 / 0)}
+}
+.pulse-dot { animation: pulse-ring 2s infinite; }
+
+@keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.ticker-track { display:inline-flex; white-space:nowrap; animation: ticker 40s linear infinite; }
+.ticker-track:hover { animation-play-state: paused; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(var(--muted) / 0.4); border-radius: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .aurora { display: none; }
+}

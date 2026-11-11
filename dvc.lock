@@ -1,0 +1,132 @@
+schema: '2.0'
+stages:
+  train_finbert_sentiment:
+    cmd: python -m research.train_classifier --task sentiment --model 
+      ProsusAI/finbert --gold data/corpus/labelled.jsonl --out models/finbert-in
+      --epochs 4 --lr 2e-05 --batch 16 --max-len 64 --seed 42
+    deps:
+    - path: data/corpus/labelled.jsonl
+      hash: md5
+      md5: 24e67356af731a57b686ff53c478f821
+      size: 1848584
+    - path: research/train_classifier.py
+      hash: md5
+      md5: 174271e8fba77f1af86bf9938fdf9363
+      size: 10597
+    params:
+      params.yaml:
+        models.finbert: ProsusAI/finbert
+        train:
+          epochs: 4
+          lr: 2e-05
+          batch: 16
+          max_len: 64
+          seed: 42
+    outs:
+    - path: models/finbert-in
+      hash: md5
+      md5: 25aa0ff21e557712fe7eebd4bec73c51.dir
+      size: 438915373
+      nfiles: 8
+  train_deberta_sentiment:
+    cmd: python -m research.train_classifier --task sentiment --model 
+      microsoft/deberta-v3-base --gold data/corpus/labelled.jsonl --out 
+      models/deberta-sentiment --epochs 4 --lr 2e-05 --batch 16 --max-len 64 
+      --seed 42
+    deps:
+    - path: data/corpus/labelled.jsonl
+      hash: md5
+      md5: 24e67356af731a57b686ff53c478f821
+      size: 1848584
+    - path: research/train_classifier.py
+      hash: md5
+      md5: 174271e8fba77f1af86bf9938fdf9363
+      size: 10597
+    params:
+      params.yaml:
+        models.deberta: microsoft/deberta-v3-base
+        train:
+          epochs: 4
+          lr: 2e-05
+          batch: 16
+          max_len: 64
+          seed: 42
+    outs:
+    - path: models/deberta-sentiment
+      hash: md5
+      md5: 7411d1d2d8441105c3feb8af6c5cf8f2.dir
+      size: 748854809
+      nfiles: 9
+  train_deberta_events:
+    cmd: python -m research.train_classifier --task events --model 
+      microsoft/deberta-v3-base --gold data/corpus/labelled.jsonl --out 
+      models/deberta-events --epochs 4 --lr 2e-05 --batch 16 --max-len 64 --seed
+      42
+    deps:
+    - path: data/corpus/labelled.jsonl
+      hash: md5
+      md5: 24e67356af731a57b686ff53c478f821
+      size: 1848584
+    - path: research/train_classifier.py
+      hash: md5
+      md5: 174271e8fba77f1af86bf9938fdf9363
+      size: 10597
+    params:
+      params.yaml:
+        models.deberta: microsoft/deberta-v3-base
+        train:
+          epochs: 4
+          lr: 2e-05
+          batch: 16
+          max_len: 64
+          seed: 42
+    outs:
+    - path: models/deberta-events
+      hash: md5
+      md5: 3bbc5a4fdb88205028e0bb2e6d52a8cc.dir
+      size: 748870972
+      nfiles: 9
+  evaluate:
+    cmd: python -m research.evaluate --gold data/corpus/labelled.jsonl --split 
+      test --finbert --pred finbert_in=models/finbert-in/predictions_test.jsonl 
+      --pred deberta_in=models/deberta-sentiment/predictions_test.jsonl --pred 
+      deberta_events=models/deberta-events/predictions_test.jsonl 
+      --allow-partial-test
+    deps:
+    - path: data/corpus/labelled.jsonl
+      hash: md5
+      md5: 24e67356af731a57b686ff53c478f821
+      size: 1848584
+    - path: models/deberta-events/predictions_test.jsonl
+      hash: md5
+      md5: e226576f2e2bc63ec630e2e9f46a5c19
+      size: 7553
+    - path: models/deberta-sentiment/predictions_test.jsonl
+      hash: md5
+      md5: 13edf6667b534c63fc1c276ed142e2d6
+      size: 7065
+    - path: models/finbert-in/predictions_test.jsonl
+      hash: md5
+      md5: 72034ca853a6cbbd7a8ab5d6feed51d6
+      size: 7067
+    - path: research/baselines.py
+      hash: md5
+      md5: 8cefd0b670491838a7923f80619efae8
+      size: 5338
+    - path: research/evaluate.py
+      hash: md5
+      md5: 2e5b2e501558acc584b8c0d3b6bafdaf
+      size: 6922
+    - path: research/metrics.py
+      hash: md5
+      md5: 9f2dec9b46510d95b06ee76d3d17ad4d
+      size: 7204
+    outs:
+    - path: reports/eval_test.json
+      hash: md5
+      md5: df7cf1887f4494de0493f00327d52732
+      size: 8310
+    - path: reports/eval_test.md
+      hash: md5
+      md5: 0b9077e74aa073bd515c547a09eb5eaa
+      size: 657

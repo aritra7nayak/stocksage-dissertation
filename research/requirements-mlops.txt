@@ -1,0 +1,8 @@
+# MLOps client tooling for research scripts (not needed by the API or CI).
+#   pip install -r research/requirements-mlops.txt
+# Client version matches the MLflow server image in docker-compose.yml.
+mlflow-skinny==3.5.0
+dvc==3.59.1                 # data and model versioning (dvc.yaml, data/*.dvc)
+pathspec==0.12.1            # dvc 3.59 breaks with pathspec 1.x (_DIR_MARK removed)
+sentencepiece==0.2.0        # DeBERTa-v3 tokenizer for research.train_classifier
+protobuf>=6.33.5,<7         # 2.x pins protobuf<6, which breaks google-cloud-bigquery (GDELT)

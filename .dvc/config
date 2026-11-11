@@ -1,0 +1,5 @@
+[core]
+    remote = store
+    autostage = true
+['remote "store"']
+    url = C:/Users/aritr/dvc-store

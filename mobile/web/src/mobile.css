@@ -1,0 +1,109 @@
+/* ── Mobile layer over frontend/src/index.css ────────────────────────────────
+   Safe areas come from the native window (MainActivity pushes --sat/--sab),
+   heavy desktop effects are swapped for GPU-cheap equivalents, and desktop
+   type sizes are scaled for a 360–430 px wide screen.                        */
+
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: 0px;
+  --sar: 0px;
+  --topbar: 56px;
+  --tabbar: 62px;
+}
+
+html, body {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+html { scroll-behavior: auto; }
+body { touch-action: manipulation; overflow-x: hidden; }
+
+/* Native-feeling text: no accidental selection while scrolling, except where typing. */
+.mobile-shell { -webkit-user-select: none; user-select: none; }
+.mobile-shell input, .mobile-shell textarea, .mobile-shell [contenteditable] { -webkit-user-select: text; user-select: text; }
+
+.font-display { font-family: "Sora", system-ui, sans-serif; }
+
+/* ── Performance: per-card backdrop blur is the #1 scroll-jank source on
+   phones. Cards get an opaque-ish surface; only the fixed bars blur. ── */
+.glass {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgb(var(--surface) / 0.9);
+  border-radius: 18px;
+}
+.dark .glass { background: rgb(var(--surface) / 0.86); }
+.bar-glass {
+  background: rgb(var(--surface) / 0.8);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+.top-bar { padding-top: var(--sat); border-bottom: 1px solid rgb(var(--line) / var(--line-a)); }
+.tab-bar { padding-bottom: var(--sab); border-top: 1px solid rgb(var(--line) / var(--line-a)); }
+
+/* Aurora: same colours, no full-screen blur filter, no continuous animation. */
+.aurora { filter: none; inset: -10%; }
+.aurora span { animation: none !important; }
+.dark .aurora { opacity: 0.3; }
+.light .aurora { opacity: 0.22; }
+.aurora .a1 { width: 120vw; height: 120vw; left: 30%; top: -30%; }
+.aurora .a2 { width: 110vw; height: 110vw; left: -50%; top: 45%; }
+.aurora .a3 { width: 90vw; height: 90vw; left: 20%; top: 75%; }
+
+/* Glows are box-shadows: fine, but tone them down on small cards. */
+.glow-brand, .glow-buy, .glow-sell, .glow-hold { box-shadow: none; }
+
+/* ── Layout ── */
+.app-main {
+  min-height: 100vh;
+  padding: calc(var(--sat) + var(--topbar) + 14px) calc(14px + var(--sar)) calc(var(--sab) + var(--tabbar) + 22px) calc(14px + var(--sal));
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+}
+.app-main > div > div { max-width: 100%; }
+
+.tab-btn { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+.tab-btn:active { transform: scale(0.94); }
+.tab-pill {
+  position: absolute; top: 7px; width: 56px; height: 30px; border-radius: 999px;
+  background: linear-gradient(135deg, rgb(91 141 239 / 0.22), rgb(22 199 132 / 0.18));
+}
+.theme-toggle-sm button { width: 38px; height: 38px; border-radius: 12px; }
+
+.sheet {
+  background: rgb(var(--surface));
+  padding-bottom: calc(var(--sab) + 12px);
+  box-shadow: 0 -12px 40px rgb(0 0 0 / 0.25);
+}
+.sheet-active { background: rgb(var(--muted) / 0.1); }
+
+/* ── Desktop type scaled for phones ── */
+.app-main .text-6xl { font-size: 2.6rem; line-height: 1.05; }
+.app-main .text-5xl { font-size: 2.2rem; line-height: 1.08; }
+.app-main .text-4xl { font-size: 1.75rem; line-height: 1.12; }
+.app-main .text-3xl { font-size: 1.45rem; line-height: 1.18; }
+.app-main .p-8 { padding: 1.15rem; }
+.app-main .p-7 { padding: 1.1rem; }
+.app-main .p-6 { padding: 1rem; }
+.app-main .px-8 { padding-left: 1.1rem; padding-right: 1.1rem; }
+.app-main .gap-8 { gap: 1.25rem; }
+.app-main .gap-6 { gap: 1rem; }
+.app-main .mb-10 { margin-bottom: 1.5rem; }
+.app-main .mb-8 { margin-bottom: 1.25rem; }
+.app-main .mt-20 { margin-top: 2.5rem; }
+.app-main .py-24 { padding-top: 4rem; padding-bottom: 4rem; }
+
+/* Wide tables scroll sideways inside their card, with momentum. */
+.app-main .overflow-x-auto { -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+
+/* Modals from the shared pages: full-width sheets on a phone. */
+.app-main .fixed.inset-0 { z-index: 60; }
+
+/* Hover-only effects shouldn't stick after a tap. */
+@media (hover: none) {
+  .hover\:scale-105:hover, .hover\:scale-110:hover, .hover\:scale-\[1\.01\]:hover { transform: none; }
+}
+
+::-webkit-scrollbar { width: 0; height: 0; }

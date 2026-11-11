@@ -1,0 +1,72 @@
+# Reproducible training and evaluation (Module B, E1/E2).
+#
+#   dvc repro            # rerun whatever is out of date
+#   dvc metrics show     # dev/test numbers of the current models
+#   dvc push / dvc pull  # sync data and models with the DVC store
+#
+# data/corpus/labelled.jsonl is the input. It is built from the Research tab
+# labels (a database, which DVC cannot watch) with
+#   python -m research.build_sample gold
+# then recorded with `dvc add data/corpus`. Everything after it is a stage.
+stages:
+  train_finbert_sentiment:
+    cmd: python -m research.train_classifier --task sentiment --model ${models.finbert}
+      --gold data/corpus/labelled.jsonl --out models/finbert-in --epochs ${train.epochs}
+      --lr ${train.lr} --batch ${train.batch} --max-len ${train.max_len} --seed ${train.seed}
+    deps:
+      - data/corpus/labelled.jsonl
+      - research/train_classifier.py
+    params:
+      - train
+      - models.finbert
+    outs:
+      - models/finbert-in
+
+  train_deberta_sentiment:
+    cmd: python -m research.train_classifier --task sentiment --model ${models.deberta}
+      --gold data/corpus/labelled.jsonl --out models/deberta-sentiment --epochs ${train.epochs}
+      --lr ${train.lr} --batch ${train.batch} --max-len ${train.max_len} --seed ${train.seed}
+    deps:
+      - data/corpus/labelled.jsonl
+      - research/train_classifier.py
+    params:
+      - train
+      - models.deberta
+    outs:
+      - models/deberta-sentiment
+
+  train_deberta_events:
+    cmd: python -m research.train_classifier --task events --model ${models.deberta}
+      --gold data/corpus/labelled.jsonl --out models/deberta-events --epochs ${train.epochs}
+      --lr ${train.lr} --batch ${train.batch} --max-len ${train.max_len} --seed ${train.seed}
+    deps:
+      - data/corpus/labelled.jsonl
+      - research/train_classifier.py
+    params:
+      - train
+      - models.deberta
+    outs:
+      - models/deberta-events
+
+  evaluate:
+    # --allow-partial-test while the test split is still being reviewed; drop it
+    # once all 450 test rows are labelled (the report marks the run as partial).
+    cmd: python -m research.evaluate --gold data/corpus/labelled.jsonl --split test --finbert
+      --pred finbert_in=models/finbert-in/predictions_test.jsonl
+      --pred deberta_in=models/deberta-sentiment/predictions_test.jsonl
+      --pred deberta_events=models/deberta-events/predictions_test.jsonl
+      --allow-partial-test
+    deps:
+      - data/corpus/labelled.jsonl
+      - research/evaluate.py
+      - research/metrics.py
+      - research/baselines.py
+      - models/finbert-in/predictions_test.jsonl
+      - models/deberta-sentiment/predictions_test.jsonl
+      - models/deberta-events/predictions_test.jsonl
+    metrics:
+      - reports/eval_test.json:
+          cache: false
+    outs:
+      - reports/eval_test.md:
+          cache: false

@@ -1,0 +1,50 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# StockSage India — production stack using a managed Postgres (Neon).
+#
+#   cd deploy && docker compose -f docker-compose.neon.yml up -d --build
+#
+# Two containers only: the app, and Caddy terminating TLS in front of it.
+# The database lives at Neon, so DATABASE_URL / DATABASE_URL_SYNC come from
+# deploy/.env. Use docker-compose.prod.yml instead to run Postgres on the VM.
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in deploy/.env (must start postgresql+asyncpg://)}
+      DATABASE_URL_SYNC: ${DATABASE_URL_SYNC:?set DATABASE_URL_SYNC in deploy/.env}
+      AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET in deploy/.env}
+      # This VM never sleeps, so the real IST cron jobs are on.
+      ENABLE_SCHEDULER: "true"
+      SERVE_FRONTEND: "true"
+      USE_GPU: "false"
+      TZ: Asia/Kolkata
+      # Same-origin behind Caddy, so no cross-origin allowance is needed.
+      CORS_ORIGINS: https://${DOMAIN}
+    volumes:
+      # Saved multi-backtest runs would otherwise vanish on every restart.
+      - jobhistory:/app/job_history
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in deploy/.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data      # certificates live here — keep this volume
+      - caddyconfig:/config
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  jobhistory:
+  caddydata:
+  caddyconfig:

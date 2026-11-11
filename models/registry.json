@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "tasks": {
+    "sentiment": {
+      "versions": [
+        {
+          "version": 1,
+          "task": "sentiment",
+          "path": "models/finbert-in",
+          "base_model": "ProsusAI/finbert",
+          "weights_sha256": "0ee752dc6ff5f1493529232d090cb1dca678d33b8b03275f75ecec0b0f793a28",
+          "gold_sha256": "1c80640457050801a1000f547b35fcd00ad65928d3efb7f1a3fb6ecbc37c8b7a",
+          "test_fingerprint": "a68366fafbbef7a460b554826c3f04194137b6954920daa6ce53b08b892e74d2",
+          "best_dev_macro_f1": 0.729,
+          "mlflow_run_id": null,
+          "mlflow_version": null,
+          "registered_at": "2026-11-11T01:53:41+00:00",
+          "stage": "candidate",
+          "gates": []
+        },
+        {
+          "version": 2,
+          "task": "sentiment",
+          "path": "models/deberta-sentiment",
+          "base_model": "microsoft/deberta-v3-base",
+          "weights_sha256": "e465cb1814306446faf0baa2ccd287775a72945bf99b811662ff1908e79d51cb",
+          "gold_sha256": "1c80640457050801a1000f547b35fcd00ad65928d3efb7f1a3fb6ecbc37c8b7a",
+          "test_fingerprint": "a68366fafbbef7a460b554826c3f04194137b6954920daa6ce53b08b892e74d2",
+          "best_dev_macro_f1": 0.7847,
+          "mlflow_run_id": null,
+          "mlflow_version": null,
+          "registered_at": "2026-11-11T01:53:43+00:00",
+          "stage": "shadow",
+          "gates": []
+        }
+      ],
+      "champion": null,
+      "shadow": 2,
+      "history": [
+        {
+          "at": "2026-11-11T01:53:41+00:00",
+          "action": "register",
+          "version": 1
+        },
+        {
+          "at": "2026-11-11T01:53:43+00:00",
+          "action": "register",
+          "version": 2
+        },
+        {
+          "at": "2026-11-11T01:53:54+00:00",
+          "action": "shadow",
+          "version": 2
+        }
+      ],
+      "test_set_looks": 0
+    },
+    "events": {
+      "versions": [
+        {
+          "version": 1,
+          "task": "events",
+          "path": "models/deberta-events",
+          "base_model": "microsoft/deberta-v3-base",
+          "weights_sha256": "a07dbb19c7a70d8993da81b4ce28ada4039d29b2c29d6d1fafaedd230d263458",
+          "gold_sha256": "1c80640457050801a1000f547b35fcd00ad65928d3efb7f1a3fb6ecbc37c8b7a",
+          "test_fingerprint": "a68366fafbbef7a460b554826c3f04194137b6954920daa6ce53b08b892e74d2",
+          "best_dev_macro_f1": 0.4784,
+          "mlflow_run_id": null,
+          "mlflow_version": null,
+          "registered_at": "2026-11-11T01:53:45+00:00",
+          "stage": "candidate",
+          "gates": []
+        }
+      ],
+      "champion": null,
+      "shadow": null,
+      "history": [
+        {
+          "at": "2026-11-11T01:53:45+00:00",
+          "action": "register",
+          "version": 1
+        }
+      ],
+      "test_set_looks": 0
+    }
+  }
+}

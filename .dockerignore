@@ -1,0 +1,26 @@
+.git
+.gitignore
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.auth_secret
+backend/job_history
+backend/tests
+frontend/dist
+frontend/tsconfig.tsbuildinfo
+# NOTE: scripts/ is deliberately NOT ignored - the image COPYs it so the
+# universe seeder can run inside the container (python scripts/seed_universe.py).
+*.md
+!README.md
+docker-compose.yml
+start.bat
+stop.bat
+*.json
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/tsconfig.json

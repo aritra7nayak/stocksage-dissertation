@@ -1,0 +1,26 @@
+# Tool configuration only; the app is not packaged.
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+pythonpath = ["backend", "."]
+addopts = "-q"
+
+[tool.coverage.run]
+source = ["backend/app", "research"]
+omit = ["*/tests/*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+extend-exclude = ["mobile", "frontend", "backend/static"]
+
+[tool.ruff.lint]
+# Correctness-focused set. Style is not enforced on the existing code base.
+select = ["E9", "F", "B006", "PLE"]
+ignore = [
+    "F401",   # re-exports and lazy imports are deliberate in places
+]
+
+[tool.ruff.lint.per-file-ignores]
+"backend/tests/*" = ["E402"]
+"research/*" = ["E402"]

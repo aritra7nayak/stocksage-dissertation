@@ -1,0 +1,119 @@
+# ─── Secrets / local config ───────────────────────────────────────────
+# .env.example is the tracked template; real .env files stay local
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.auth_secret
+*.pem
+*.key
+
+# ─── Python ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+backend/.venv/
+
+# Test / type-check caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.tox/
+.nox/
+
+# ─── Node / frontend ──────────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+# Built SPA copied in for single-origin serving (start-public.bat)
+backend/static/
+frontend/.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# ─── Generated app output ─────────────────────────────────────────────
+backend/job_history/
+brief.json
+backtest.json
+*.log
+logs/
+
+# ─── Local data / databases ───────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+pgdata/
+postgres-data/
+
+# ─── ML model caches ──────────────────────────────────────────────────
+.cache/
+*.pt
+*.bin
+*.safetensors
+
+# ─── Editors / OS ─────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Claude Code ──────────────────────────────────────────────────────
+.claude/settings.local.json
+
+# ─── Android app (mobile/) ────────────────────────────────────────────
+mobile/web/node_modules/
+mobile/android/.gradle/
+mobile/android/.kotlin/
+mobile/android/build/
+mobile/android/app/build/
+mobile/android/local.properties
+# Built web bundle and the 146 MB model are generated (see mobile/README.md)
+mobile/android/app/src/main/assets/web/
+mobile/android/app/src/main/assets/finbert/model.onnx
+# Release signing — never commit; back these two files up somewhere safe
+mobile/android/keystore.properties
+mobile/android/*.jks
+mobile/dist/
+mobile/web/tests/parity/*.json
+
+# ─── Research artefacts (tracked with DVC, see research/README.md) ────
+# The files live in the DVC store; git keeps only the small pointers
+# (*.dvc, dvc.lock), the model registry and the evaluation summary.
+# DVC writes data/.gitignore and models/.gitignore for what it tracks. Do not
+# ignore /data or /models here: DVC skips git-ignored folders and would then
+# not see data/*.dvc.
+/reports/*
+!/reports/eval_test.json
+!/reports/eval_test.md

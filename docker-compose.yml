@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: stocksage_db
+    environment:
+      POSTGRES_DB: stocksage
+      POSTGRES_USER: stocksage
+      POSTGRES_PASSWORD: stocksage_secret_2026
+    ports:
+      - "5433:5432"   # 5433 on host to avoid clashing with any local Postgres/SQL Server tooling
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stocksage -d stocksage"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  # ── MLOps (opt-in; start.bat never starts these) ─────────────────────────
+  #   docker compose --profile mlops up -d        -> MLflow UI http://localhost:5000
+  #   docker compose --profile monitoring up -d   -> Grafana http://localhost:3001
+  # Ports bind to 127.0.0.1 only.
+  mlflow:
+    profiles: ["mlops"]
+    image: ghcr.io/mlflow/mlflow:v3.5.0
+    container_name: stocksage_mlflow
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --artifacts-destination /mlflow/artifacts --serve-artifacts
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - mlflow:/mlflow
+    restart: unless-stopped
+
+  prometheus:
+    profiles: ["monitoring"]
+    image: prom/prometheus:v2.55.1
+    container_name: stocksage_prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=180d
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./deploy/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./deploy/monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # Linux; Docker Desktop resolves it already
+    restart: unless-stopped
+
+  grafana:
+    profiles: ["monitoring"]
+    image: grafana/grafana:11.3.1
+    container_name: stocksage_grafana
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"         # local-only (127.0.0.1); viewer role
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_PASSWORD: stocksage
+    ports:
+      - "127.0.0.1:3001:3000"
+    volumes:
+      - ./deploy/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deploy/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  mlflow:
+  prometheus:
+  grafana:

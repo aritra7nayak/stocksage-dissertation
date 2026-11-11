@@ -1,0 +1,12 @@
+# Training and evaluation settings for the DVC pipeline (dvc.yaml).
+# Change a value here and `dvc repro` reruns only the stages that use it;
+# `dvc params diff` shows what changed between two commits.
+train:
+  epochs: 4
+  lr: 2.0e-5
+  batch: 16          # fits a 4 GB GPU at max_len 64 (bf16)
+  max_len: 64
+  seed: 42
+models:
+  finbert: ProsusAI/finbert
+  deberta: microsoft/deberta-v3-base

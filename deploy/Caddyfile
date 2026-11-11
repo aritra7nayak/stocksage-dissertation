@@ -1,0 +1,19 @@
+# Automatic HTTPS: Caddy fetches and renews a Let's Encrypt certificate for
+# $DOMAIN on its own, provided ports 80 and 443 are reachable from the internet
+# and the domain's A record points at this VM.
+
+{$DOMAIN} {
+	encode gzip
+
+	reverse_proxy app:7860 {
+		# Engine runs and backtests are slow by nature; don't cut them off.
+		transport http {
+			response_header_timeout 15m
+		}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

@@ -1,0 +1,37 @@
+groups:
+  - name: stocksage
+    rules:
+      - alert: NewsPollStalled
+        # Polls run every 30 minutes; two missed polls means the app, the
+        # laptop or every feed is down, and the corpus has a gap.
+        expr: time() - stocksage_last_news_poll_timestamp_seconds > 3600
+        for: 5m
+        annotations:
+          summary: "No successful news poll for over an hour"
+
+      - alert: ScorerFallingBack
+        expr: increase(stocksage_scorer_fallback_total{role="champion"}[1h]) > 0
+        annotations:
+          summary: "Champion model is not loaded; headlines get the neutral fallback"
+
+      - alert: ShadowDisagreementHigh
+        # Share of headlines where the shadow's label differs, over a day.
+        expr: >
+          sum(increase(stocksage_shadow_agreement_total{agree="false"}[1d]))
+          / clamp_min(sum(increase(stocksage_shadow_agreement_total[1d])), 1) > 0.35
+          and sum(increase(stocksage_shadow_agreement_total[1d])) > 100
+        annotations:
+          summary: "Shadow disagrees with the champion on more than 35% of headlines"
+
+      - alert: FeedFailing
+        expr: increase(stocksage_feed_errors_total[2h]) >= 3
+        annotations:
+          summary: "Feed {{ $labels.feed }} failed 3+ times in 2 hours"
+
+      - alert: LowConfidenceShift
+        # Median champion confidence over the last day below 0.6.
+        expr: >
+          histogram_quantile(0.5, sum by (le) (rate(stocksage_sentiment_confidence_bucket{role="champion"}[1d]))) < 0.6
+        for: 1h
+        annotations:
+          summary: "Champion confidence has dropped; possible drift (run research.drift)"
