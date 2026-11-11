@@ -138,7 +138,61 @@ def main(argv=None):
     (out / f"eval_{a.split}.json").write_text(json.dumps(rep, indent=2), encoding="utf-8")
     (out / f"eval_{a.split}.md").write_text(_markdown(rep), encoding="utf-8")
     print(_markdown(rep))
+    rep_run = _mlflow(rep, a, out)
+    if rep_run:
+        print(f"MLflow run {rep_run} (experiment stocksage-evaluation)")
     return rep
+
+
+def _flat_metrics(rep: dict) -> dict[str, float]:
+    """The headline numbers of E1-E3 as flat MLflow metric names."""
+    m = {}
+    for name, r in rep["E1"].items():
+        m[f"E1.{name}.macro_f1"] = r["macro_f1"]["point"]
+        m[f"E1.{name}.macro_f1_low"] = r["macro_f1"]["low"]
+        m[f"E1.{name}.macro_f1_high"] = r["macro_f1"]["high"]
+        m[f"E1.{name}.accuracy"] = r["accuracy"]
+        for base, cmp in ((k[3:], v) for k, v in r.items() if k.startswith("vs_")):
+            m[f"E1.{name}.vs_{base}.mcnemar_p"] = cmp["mcnemar"]["p_value"]
+            m[f"E1.{name}.vs_{base}.delta_macro_f1"] = cmp["paired_bootstrap_macro_f1"]["delta"]
+    for name, r in rep["E2"].items():
+        for k in ("micro_f1", "macro_f1", "severity_macro_f1", "false_market_halt_rate", "missed_severe_rate"):
+            if isinstance(r.get(k), (int, float)):
+                m[f"E2.{name}.{k}"] = r[k]
+    for name, r in rep["E3"].items():
+        for k in ("precision", "recall", "f1", "misattribution_rate"):
+            m[f"E3.{name}.{k}"] = r[k]
+    return {k: float(v) for k, v in m.items() if isinstance(v, (int, float))}
+
+
+def _mlflow(rep: dict, a, out: Path) -> str | None:
+    """One run per evaluation in experiment stocksage-evaluation, when
+    MLFLOW_TRACKING_URI is set. The JSON/Markdown reports stay the record of
+    truth; MLflow makes runs comparable side by side."""
+    import os
+    if not os.environ.get("MLFLOW_TRACKING_URI"):
+        return None
+    try:
+        import mlflow
+    except ImportError:
+        print("MLFLOW_TRACKING_URI is set but mlflow is not installed; skipped")
+        return None
+    try:
+        mlflow.set_experiment("stocksage-evaluation")
+        with mlflow.start_run(run_name=f"eval-{a.split}-n{rep['n']}") as run:
+            mlflow.log_params({"split": a.split, "n": rep["n"], "test_complete": rep["test_complete"],
+                               "finbert_generic": a.finbert,
+                               "models": ",".join(s.split("=", 1)[0] for s in a.pred) or "baselines"})
+            mlflow.set_tags({"gold_sha256": rep["gold_sha256"], "test_fingerprint": rep["test_fingerprint"],
+                             "interim": str(not rep["test_complete"]).lower(),
+                             **{f"pred.{s.split('=', 1)[0]}": s.split("=", 1)[1] for s in a.pred}})
+            mlflow.log_metrics(_flat_metrics(rep))
+            for f in (f"eval_{a.split}.json", f"eval_{a.split}.md"):
+                mlflow.log_artifact(str(out / f))
+            return run.info.run_id
+    except Exception as exc:                     # the report files are already written
+        print(f"MLflow logging skipped: {exc}")
+        return None
 
 
 if __name__ == "__main__":

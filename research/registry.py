@@ -414,6 +414,35 @@ def _mlflow_gate(entry: dict, res: dict) -> None:
     client.log_artifact(run, str(_abs(res["report"])))
 
 
+def sync_mlflow(reg: Registry) -> dict:
+    """Mirror the whole JSON registry into MLflow: a training run for every
+    version that has none (rebuilt from its train_log.json and tagged
+    backfilled=true, e.g. models trained before the tracking server was up),
+    a model version for each, and the champion/shadow aliases. Idempotent."""
+    if _mlflow_client() is None:
+        raise SystemExit("Set MLFLOW_TRACKING_URI (see .env.example) and start the server: "
+                         "docker compose --profile mlops up -d mlflow")
+    from research.train_classifier import _mlflow as log_training_run
+    stats = {"runs_backfilled": 0, "versions_registered": 0}
+    for task, t in reg.data["tasks"].items():
+        for v in t["versions"]:
+            if not v.get("mlflow_run_id"):
+                path = _abs(v["path"])
+                log = json.loads((path / "train_log.json").read_text(encoding="utf-8"))
+                log.setdefault("weights_sha256", v["weights_sha256"])
+                v["mlflow_run_id"] = log_training_run(log, path, tags={
+                    "backfilled": "true", "local_version": str(v["version"])})
+                stats["runs_backfilled"] += bool(v["mlflow_run_id"])
+            if v.get("mlflow_run_id") and not v.get("mlflow_version"):
+                v["mlflow_version"] = _mlflow_register(v)
+                stats["versions_registered"] += bool(v["mlflow_version"])
+        for alias in ("champion", "shadow"):
+            ver = t.get(alias)
+            _mlflow_alias(task, alias, reg.get(task, ver) if isinstance(ver, int) else None)
+    reg.save()
+    return stats
+
+
 # ── CLI ────────────────────────────────────────────────────────────────────
 
 def _print_list(reg: Registry) -> None:
@@ -434,6 +463,7 @@ def main(argv=None) -> None:
     ap.add_argument("--serving", default=str(SERVING))
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list")
+    sub.add_parser("sync-mlflow", help="mirror every version, run and alias into MLflow")
     r = sub.add_parser("register")
     r.add_argument("model_dir")
     r.add_argument("--task", choices=TASKS, default="sentiment")
@@ -458,6 +488,8 @@ def main(argv=None) -> None:
     reg = Registry(Path(a.registry), Path(a.serving))
     if a.cmd == "list":
         _print_list(reg)
+    elif a.cmd == "sync-mlflow":
+        print(json.dumps(sync_mlflow(reg)))
     elif a.cmd == "register":
         e = reg.register(Path(a.model_dir), a.task)
         print(f"registered {a.task} v{e['version']} ({e['path']}, weights {e['weights_sha256'][:12]})")

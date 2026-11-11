@@ -187,8 +187,25 @@ def weights_sha256(model_dir: Path) -> str:
 _MLFLOW_ARTIFACTS = ("predictions_test.jsonl", "config.json")
 
 
-def _mlflow(log: dict, out: Path) -> str | None:
-    """Log the run to MLflow when MLFLOW_TRACKING_URI is set. Returns the run id."""
+def _rel_out(out: Path) -> str:
+    try:
+        return Path(out).resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return str(out)
+
+
+def _git_commit() -> str | None:
+    import subprocess
+    try:
+        return subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
+                              text=True, timeout=10).stdout.strip() or None
+    except Exception:
+        return None
+
+
+def _mlflow(log: dict, out: Path, tags: dict | None = None) -> str | None:
+    """Log the run to MLflow when MLFLOW_TRACKING_URI is set. Returns the run id.
+    `tags` adds to the standard ones (registry sync-mlflow marks backfilled runs)."""
     if not os.environ.get("MLFLOW_TRACKING_URI"):
         return None
     try:
@@ -198,13 +215,15 @@ def _mlflow(log: dict, out: Path) -> str | None:
               "(pip install -r research/requirements-mlops.txt)")
         return None
     mlflow.set_experiment(f"stocksage-{log['task']}")
-    with mlflow.start_run() as run:
+    with mlflow.start_run(run_name=f"{Path(out).name}-{str(log['model']).split('/')[-1]}") as run:
         mlflow.log_params({k: log[k] for k in ("task", "model", "revision", "seed", "lr",
                                                "epochs", "batch", "max_len", "device", "bf16")})
         mlflow.log_params({f"n_{s}": n for s, n in log["n"].items()})
         mlflow.set_tags({"gold_sha256": log["gold_sha256"],
                          "test_fingerprint": log["test_fingerprint"],
-                         "weights_sha256": log["weights_sha256"], "model_dir": str(out)})
+                         "weights_sha256": log["weights_sha256"], "model_dir": _rel_out(out),
+                         "test_complete": str(log.get("test_complete")).lower(),
+                         "git_commit": _git_commit() or "unknown", **(tags or {})})
         for h in log["history"]:
             mlflow.log_metrics({"train_loss": h["train_loss"],
                                 "dev_macro_f1": h["dev_macro_f1"]}, step=h["epoch"])

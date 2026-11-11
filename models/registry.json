@@ -12,8 +12,8 @@
           "gold_sha256": "1c80640457050801a1000f547b35fcd00ad65928d3efb7f1a3fb6ecbc37c8b7a",
           "test_fingerprint": "a68366fafbbef7a460b554826c3f04194137b6954920daa6ce53b08b892e74d2",
           "best_dev_macro_f1": 0.729,
-          "mlflow_run_id": null,
-          "mlflow_version": null,
+          "mlflow_run_id": "9689423b3c34454f8fae90030aeace1d",
+          "mlflow_version": "1",
           "registered_at": "2026-11-11T01:53:41+00:00",
           "stage": "candidate",
           "gates": []
@@ -27,8 +27,8 @@
           "gold_sha256": "1c80640457050801a1000f547b35fcd00ad65928d3efb7f1a3fb6ecbc37c8b7a",
           "test_fingerprint": "a68366fafbbef7a460b554826c3f04194137b6954920daa6ce53b08b892e74d2",
           "best_dev_macro_f1": 0.7847,
-          "mlflow_run_id": null,
-          "mlflow_version": null,
+          "mlflow_run_id": "379b4d329dbe4e41b2c034eaca2c4d9b",
+          "mlflow_version": "2",
           "registered_at": "2026-11-11T01:53:43+00:00",
           "stage": "shadow",
           "gates": []
@@ -66,8 +66,8 @@
           "gold_sha256": "1c80640457050801a1000f547b35fcd00ad65928d3efb7f1a3fb6ecbc37c8b7a",
           "test_fingerprint": "a68366fafbbef7a460b554826c3f04194137b6954920daa6ce53b08b892e74d2",
           "best_dev_macro_f1": 0.4784,
-          "mlflow_run_id": null,
-          "mlflow_version": null,
+          "mlflow_run_id": "838b2f400d9f4b54a7e6ee032ae81850",
+          "mlflow_version": "1",
           "registered_at": "2026-11-11T01:53:45+00:00",
           "stage": "candidate",
           "gates": []

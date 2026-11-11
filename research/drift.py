@@ -233,7 +233,31 @@ def main(argv=None) -> int:
     (out / f"{stem}.json").write_text(json.dumps(rep, indent=2, default=str), encoding="utf-8")
     (out / f"{stem}.md").write_text(_markdown(rep), encoding="utf-8")
     print(_markdown(rep))
+    _mlflow(rep, out / f"{stem}.json", out / f"{stem}.md")
     return 2 if rep["overall"] == "drift" else 0
+
+
+def _mlflow(rep: dict, *artifacts: Path) -> None:
+    """One run per drift report (experiment stocksage-monitoring) so PSI per
+    check can be plotted over time in MLflow. Skipped without MLFLOW_TRACKING_URI."""
+    if not os.environ.get("MLFLOW_TRACKING_URI"):
+        return
+    try:
+        import mlflow
+        mlflow.set_experiment("stocksage-monitoring")
+        with mlflow.start_run(run_name=f"drift-{last_day(rep['current']['end'])}"):
+            mlflow.log_params({"reference_start": rep["reference"]["start"][:10],
+                               "current_start": rep["current"]["start"][:10],
+                               "current_end": last_day(rep["current"]["end"]),
+                               "n_reference": rep["n_reference"], "n_current": rep["n_current"],
+                               "champion": rep["champion"]})
+            mlflow.set_tags({"overall": rep["overall"]})
+            mlflow.log_metrics({f"{name}.{k}": float(c[k]) for name, c in rep["checks"].items()
+                                for k in ("psi", "value") if isinstance(c.get(k), (int, float))})
+            for p in artifacts:
+                mlflow.log_artifact(str(p))
+    except Exception as exc:                     # the report files are already written
+        print(f"MLflow logging skipped: {exc}")
 
 
 if __name__ == "__main__":
