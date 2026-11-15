@@ -367,7 +367,7 @@ function AnnotatorsPanel() {
 
 /* ── Page ───────────────────────────────────────────────────────────────── */
 const VIEWS: { v: View; label: string; onlyA?: boolean }[] = [
-  { v: "todo", label: "To do" }, { v: "prefilled", label: "Pre-filled" },
+  { v: "review", label: "Needs review" }, { v: "todo", label: "To do" }, { v: "prefilled", label: "Pre-filled" },
   { v: "flagged", label: "Flagged", onlyA: true }, { v: "done", label: "Done" }, { v: "all", label: "All" },
 ];
 
@@ -376,7 +376,7 @@ export default function ResearchPage() {
   const [params, setParams] = useSearchParams();
   const [status, setStatus] = useState<ResearchStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [view, setView] = useState<View>("todo");
+  const [view, setView] = useState<View>("review");
   const [q, setQ] = useState("");
   const [rows, setRows] = useState<ResearchRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -400,8 +400,9 @@ export default function ResearchPage() {
 
   if (error) return <ErrorState message={error} onRetry={() => { setError(null); loadStatus(); }} />;
   if (!status) return <LoadingOrb label="Loading corpus…" />;
-  const pct = status.total ? status.done / status.total : 0;
-  const left = status.total - status.done;
+  // Progress counts the rows that still need a human (the "Needs review" set).
+  const pct = status.review_total ? status.review_done / status.review_total : 0;
+  const left = status.review_total - status.review_done;
   const eta = status.avg_seconds ? Math.round((left * status.avg_seconds) / 3600) : null;
 
   return (
@@ -416,8 +417,8 @@ export default function ResearchPage() {
 
       <div className="glass mb-6 grid gap-4 rounded-2xl p-5 sm:grid-cols-4">
         <div className="sm:col-span-2">
-          <div className="mb-2 flex justify-between text-sm"><span>Labelled</span>
-            <span className="num font-bold">{status.done} / {status.total}</span></div>
+          <div className="mb-2 flex justify-between text-sm"><span>Needs review: done</span>
+            <span className="num font-bold">{status.review_done} / {status.review_total}</span></div>
           <ScoreBar value={pct} color="#16C784" />
         </div>
         <div><div className="eyebrow">Today</div><div className="num text-xl font-bold">{status.today}</div></div>
@@ -433,7 +434,8 @@ export default function ResearchPage() {
               <button key={x.v} onClick={() => setView(x.v)}
                 className="rounded-lg px-3 py-1.5 text-[13px] font-medium transition"
                 style={view === x.v ? { background: "rgb(91 141 239 / 0.18)", color: "#5B8DEF" } : { color: "rgb(var(--muted))" }}>
-                {x.label}{x.v === "prefilled" ? ` ${status.prefilled_todo}` : x.v === "flagged" ? ` ${status.flagged_todo}` : ""}
+                {x.label}{x.v === "review" ? ` ${status.review_total - status.review_done}`
+                  : x.v === "prefilled" ? ` ${status.prefilled_todo}` : x.v === "flagged" ? ` ${status.flagged_todo}` : ""}
               </button>
             ))}
           </div>

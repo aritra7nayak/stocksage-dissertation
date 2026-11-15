@@ -96,6 +96,13 @@ def eligible(rec: dict) -> bool:
     return rec.get("split") in ("train", "dev", "test")
 
 
+def needs_review(role: str, rec: dict) -> bool:
+    """Rows that still need a human (guidelines v1.3): for A the test split,
+    whose labels are the answer key; train/dev use the LLM labels. For B,
+    every row in the double subset. The split itself is never shown."""
+    return rec.get("split") == "test" if role == "A" else bool(rec.get("double_annotate"))
+
+
 def queue(role: str) -> list[dict]:
     rows = _sample()
     return rows if role == "A" else [r for r in rows if r.get("double_annotate")]
@@ -204,7 +211,9 @@ async def status(user: CurrentUser = Depends(get_current_user),
         {"a": role})).one()
     n_done = sum(1 for r in rows if r["id"] in done)
     secs = sum(float(done[r["id"]]["seconds"] or 0) for r in rows if r["id"] in done)
+    review = [r for r in rows if needs_review(role, r)]
     return {"role": role, "total": len(rows), "done": n_done, "prefilled_todo": pre,
+            "review_total": len(review), "review_done": sum(1 for r in review if r["id"] in done),
             "flagged_todo": sum(1 for r in rows if r["id"] not in done and r["id"] in flags
                                 and _prefill_for(role, r, table)) if role == "A" else 0,
             "today": int(today[0]), "avg_seconds": round(secs / n_done, 1) if n_done else None,
@@ -213,7 +222,7 @@ async def status(user: CurrentUser = Depends(get_current_user),
 
 
 @router.get("/items")
-async def items(view: str = Query("todo", pattern="^(todo|done|prefilled|flagged|all)$"),
+async def items(view: str = Query("todo", pattern="^(review|todo|done|prefilled|flagged|all)$"),
                 q: str = "", offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=200),
                 user: CurrentUser = Depends(get_current_user),
                 db: AsyncSession = Depends(get_db)) -> dict:
@@ -224,6 +233,8 @@ async def items(view: str = Query("todo", pattern="^(todo|done|prefilled|flagged
         is_done, pre = r["id"] in done, _prefill_for(role, r, table)
         shown = done[r["id"]]["prelabel"] is not None if is_done else pre is not None
         if view == "todo" and is_done or view == "done" and not is_done:
+            continue
+        if view == "review" and (is_done or not needs_review(role, r)):
             continue
         if view == "prefilled" and (is_done or not pre) or view == "flagged" and (is_done or not (shown and r["id"] in flags)):
             continue

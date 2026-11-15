@@ -5,6 +5,7 @@ export interface ResearchOptions {
 }
 export interface ResearchStatus {
   role: "A" | "B"; total: number; done: number; prefilled_todo: number; flagged_todo: number;
+  review_total: number; review_done: number;
   today: number; avg_seconds: number | null; options: ResearchOptions;
 }
 export interface ResearchRow {
@@ -25,7 +26,7 @@ export interface ResearchItem {
   index: number; total: number; label: Label | null; prelabel: Prelabel | null; review: ReviewFlag[];
   prev_id: string | null; next_id: string | null; next_todo_id: string | null;
 }
-export type View = "todo" | "done" | "prefilled" | "flagged" | "all";
+export type View = "review" | "todo" | "done" | "prefilled" | "flagged" | "all";
 
 export const getResearchStatus = () => api.get<ResearchStatus>("/api/research/status").then((r) => r.data);
 export const getResearchItems = (view: View, q: string, offset = 0, limit = 100) =>

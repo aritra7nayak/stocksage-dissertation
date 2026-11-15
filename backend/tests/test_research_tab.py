@@ -73,6 +73,12 @@ def test_queues_and_prefill(data):
     assert "split" not in rr._public(a[0])           # annotators do not see the split
 
 
+def test_needs_review_is_test_for_a_and_double_for_b(data):
+    a, b = rr.queue("A"), rr.queue("B")
+    assert [r["id"] for r in a if rr.needs_review("A", r)] == ["h0", "h1"]      # the test split
+    assert all(rr.needs_review("B", r) for r in b)                               # all of B's rows
+
+
 def test_item_payload_and_cached_table(data):
     rows, table = rr.queue("A"), rr._prelabels()
     assert rr._prelabels() is table                  # parsed once, reused until the file changes
