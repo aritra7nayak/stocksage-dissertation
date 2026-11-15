@@ -79,6 +79,22 @@ def test_needs_review_is_test_for_a_and_double_for_b(data):
     assert all(rr.needs_review("B", r) for r in b)                               # all of B's rows
 
 
+def test_b_subset_replaces_double_subset(data):
+    sample, out = data / "corpus" / "sample.jsonl", data / "annotation" / "b_subset.json"
+    doc = build_sample.draw_b_subset(sample, out, n=1, seed=3)
+    assert doc["ids"][0] in {"h0", "h1"} and doc["split"] == "test"          # only test rows
+    assert build_sample.draw_b_subset.__doc__ and out.exists()
+    with pytest.raises(SystemExit, match="exists"):
+        build_sample.draw_b_subset(sample, out, n=1, seed=3)                  # never redrawn silently
+    rr._cache.clear()
+    assert [r["id"] for r in rr.queue("B")] == doc["ids"]
+    row = {"sentiment": "neutral", "events": ["other"], "severity": "none", "scope": "none",
+           "companies": [], "sectors": [], "notes": None, "prelabel": None}
+    assert build_sample.labels_to_records([row | {"item_id": doc["ids"][0]}], "B", sample)
+    with pytest.raises(schema.SchemaError, match="outside"):
+        build_sample.labels_to_records([row | {"item_id": "h2"}], "B", sample)   # old double row
+
+
 def test_item_payload_and_cached_table(data):
     rows, table = rr.queue("A"), rr._prelabels()
     assert rr._prelabels() is table                  # parsed once, reused until the file changes

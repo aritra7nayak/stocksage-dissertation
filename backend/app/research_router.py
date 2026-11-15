@@ -96,16 +96,32 @@ def eligible(rec: dict) -> bool:
     return rec.get("split") in ("train", "dev", "test")
 
 
+def _b_subset() -> set[str] | None:
+    """Annotator B's rows (guidelines v1.4): data/annotation/b_subset.json,
+    written by `build_sample b-subset`. Without it, B gets the double subset."""
+    doc = _cached(_data_dir() / "annotation" / "b_subset.json",
+                  lambda p: json.loads(p.read_text(encoding="utf-8")))
+    return set(doc["ids"]) if doc else None
+
+
+def is_b_row(rec: dict, subset: set[str] | None = None) -> bool:
+    subset = _b_subset() if subset is None else subset
+    return rec["id"] in subset if subset is not None else bool(rec.get("double_annotate"))
+
+
 def needs_review(role: str, rec: dict) -> bool:
     """Rows that still need a human (guidelines v1.3): for A the test split,
     whose labels are the answer key; train/dev use the LLM labels. For B,
-    every row in the double subset. The split itself is never shown."""
-    return rec.get("split") == "test" if role == "A" else bool(rec.get("double_annotate"))
+    every row of B's subset. The split itself is never shown."""
+    return rec.get("split") == "test" if role == "A" else is_b_row(rec)
 
 
 def queue(role: str) -> list[dict]:
     rows = _sample()
-    return rows if role == "A" else [r for r in rows if r.get("double_annotate")]
+    if role == "A":
+        return rows
+    subset = _b_subset()
+    return [r for r in rows if is_b_row(r, subset)]
 
 
 def _public(rec: dict) -> dict:

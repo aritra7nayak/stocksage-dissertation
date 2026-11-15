@@ -261,11 +261,38 @@ def read_sheet(path: str | Path, annotator: str, sample_path: str | Path,
     return out
 
 
+B_SUBSET_NAME = "b_subset.json"
+
+
+def read_b_subset(path: str | Path) -> set[str] | None:
+    p = Path(path)
+    return set(json.loads(p.read_text(encoding="utf-8"))["ids"]) if p.exists() else None
+
+
+def draw_b_subset(sample_path: str | Path, out: str | Path, n: int, seed: int, split: str = "test") -> dict:
+    """Annotator B's rows (guidelines v1.4): n rows of one split, drawn with a
+    fixed seed so the draw is reproducible. Refuses to redraw over an existing
+    file, because B may already have labelled the old draw."""
+    out = Path(out)
+    if out.exists():
+        raise SystemExit(f"{out} exists; delete it deliberately to redraw")
+    pool = sorted(r["id"] for r in schema.read_jsonl(sample_path) if r.get("split") == split)
+    if n > len(pool):
+        raise SystemExit(f"only {len(pool)} {split} rows")
+    ids = sorted(random.Random(seed).sample(pool, n))
+    doc = {"n": n, "seed": seed, "split": split, "drawn_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+           "ids": ids}
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+    return doc
+
+
 def labels_to_records(rows: list[dict], annotator: str, sample_path: str | Path) -> list[dict]:
     """Rows of the `annotations` table (Research tab) -> validated labelled
     records. A row saved with a stored pre-label was reviewed from it in the
     browser (saving is the review), so it is human_verified."""
     base = {r["id"]: r for r in schema.read_jsonl(sample_path)}
+    b_ids = read_b_subset(Path(sample_path).parent.parent / "annotation" / B_SUBSET_NAME)
     out, problems, n_verified = [], [], 0
     fields = PRELABEL_FIELDS + ("companies", "sectors")
     changed = {f: 0 for f in fields}
@@ -274,7 +301,8 @@ def labels_to_records(rows: list[dict], annotator: str, sample_path: str | Path)
         if rid not in base:
             problems.append(f"{rid}: not in the sample")
             continue
-        if annotator == "B" and not base[rid].get("double_annotate"):
+        in_b = rid in b_ids if b_ids is not None else base[rid].get("double_annotate")
+        if annotator == "B" and not in_b:
             problems.append(f"{rid}: annotator B labelled a row outside the double subset")
         if lab and not eligible(base[rid]):
             problems.append(f"{rid}: a pre-label was shown on a row that must start blank")
@@ -386,6 +414,12 @@ if __name__ == "__main__":
     gd.add_argument("--no-silver", dest="silver", action="store_false",
                     help="human labels only (the silver-vs-human ablation)")
     gd.add_argument("--db", default=None)
+    bs = sub.add_parser("b-subset", help="draw annotator B's rows (seeded) into data/annotation/b_subset.json")
+    bs.add_argument("--n", type=int, default=120)
+    bs.add_argument("--seed", type=int, default=20261115)
+    bs.add_argument("--split", default="test", choices=schema.SPLITS)
+    bs.add_argument("--sample", default=str(ROOT / "data" / "corpus" / "sample.jsonl"))
+    bs.add_argument("--to", default=str(ROOT / "data" / "annotation" / B_SUBSET_NAME))
     pf = sub.add_parser("prefill", help="copy LLM pre-labels into the blank sheet A")
     pf.add_argument("--sheet", default=str(ROOT / "data" / "corpus" / "sheet_annotator_a.csv"))
     pf.add_argument("--sample", default=str(ROOT / "data" / "corpus" / "sample.jsonl"))
@@ -404,6 +438,9 @@ if __name__ == "__main__":
         else:
             recs = assemble_gold(read_db(db, "A", a.sample), a.sample, a.prelabels, a.silver)
         print(f"{schema.write_jsonl(a.to, recs)} labelled records -> {a.to}")
+    elif a.cmd == "b-subset":
+        doc = draw_b_subset(a.sample, a.to, a.n, a.seed, a.split)
+        print(f"{doc['n']} {doc['split']} rows (seed {doc['seed']}) -> {a.to}")
     elif a.cmd == "prefill":
         prefill(Path(a.sheet), Path(a.sample), Path(a.prelabels))
     elif a.cmd == "import":
