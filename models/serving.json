@@ -1,10 +1,10 @@
 {
-  "champion": null,
-  "shadow": {
+  "champion": {
     "path": "models/deberta-sentiment",
     "registry_version": 2,
     "version": "deberta-sentiment@v2:e465cb181430"
   },
-  "updated_at": "2026-11-11T02:19:20+00:00",
+  "shadow": null,
+  "updated_at": "2026-11-21T10:39:59+00:00",
   "note": "Written by research.registry. champion=null serves the pinned FINBERT_MODEL/FINBERT_REVISION from settings."
 }

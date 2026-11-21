@@ -1,0 +1,124 @@
+{
+  "items": 120,
+  "annotators": [
+    "A",
+    "B"
+  ],
+  "sentiment": 0.8088,
+  "severity": 0.9261,
+  "scope": 0.9637,
+  "sentiment_ci": {
+    "point": 0.8088,
+    "low": 0.7121,
+    "high": 0.8868,
+    "n_boot": 2000
+  },
+  "raw_agreement": {
+    "sentiment": 0.875,
+    "severity": 0.975,
+    "scope": 0.975
+  },
+  "events": {
+    "regulatory_action": 1.0,
+    "fraud_default": 1.0,
+    "monetary_policy": 1.0,
+    "earnings_guidance": 1.0,
+    "corporate_action": 1.0,
+    "macro_geopolitical": 1.0,
+    "flows": 0.8529,
+    "other": 0.9785
+  },
+  "companies_mean_jaccard": 1.0,
+  "disagreements": [
+    {
+      "id": "gdelt-0498b45f37797b1d",
+      "headline": "Only 1 in 5 employees well engaged by managers in India: Study reveals worrying trend",
+      "a": "neutral",
+      "b": "negative"
+    },
+    {
+      "id": "gdelt-04adb39a69a4399e",
+      "headline": "US FTC offers employees financial incentives to quit",
+      "a": "neutral",
+      "b": "negative"
+    },
+    {
+      "id": "gdelt-1c8b55baab1e603f",
+      "headline": "Temasek nears deal to acquire a significant minority stake in VFS Global",
+      "a": "positive",
+      "b": "neutral"
+    },
+    {
+      "id": "gdelt-1f9e661b18a7d778",
+      "headline": "Goyal criticises attempts to secure pharma patents through minor innovations",
+      "a": "neutral",
+      "b": "negative"
+    },
+    {
+      "id": "gdelt-25f7a8762156f16d",
+      "headline": "Print advertising records better y-o-y performance over TV medium",
+      "a": "neutral",
+      "b": "positive"
+    },
+    {
+      "id": "gdelt-29a85bc236d2711e",
+      "headline": "Dabur gets NCLT's nod to absorb Ayurvedic hair oil brand Sesa Care",
+      "a": "positive",
+      "b": "neutral"
+    },
+    {
+      "id": "gdelt-3e14882b820274d4",
+      "headline": "How major challenges in agricultural waste management can be addressed",
+      "a": "positive",
+      "b": "neutral"
+    },
+    {
+      "id": "gdelt-56404cf166f94205",
+      "headline": "Gold climbs over 1% as widening West Asia war fuels safe\u2011haven demand",
+      "a": "negative",
+      "b": "neutral"
+    },
+    {
+      "id": "gdelt-5a7f9ddc1154cd58",
+      "headline": "Tata AIA Life Insurance to pay Rs 1,183 cr in dividend to policyholders",
+      "a": "neutral",
+      "b": "positive"
+    },
+    {
+      "id": "gdelt-63502dff1494537a",
+      "headline": "The AzkoNobel acquisition could give JSW a foothold in the premium end of a Rs 70,000-crore market",
+      "a": "neutral",
+      "b": "positive"
+    },
+    {
+      "id": "gdelt-9595237b4d22f4b5",
+      "headline": "Commerce Minister Piyush Goyal to visit Washington for trade talks",
+      "a": "neutral",
+      "b": "positive"
+    },
+    {
+      "id": "gdelt-9cae6d8ddb14583b",
+      "headline": "Why ignoring iNAV can make gold, silver and global ETFs costlier than they look",
+      "a": "neutral",
+      "b": "negative"
+    },
+    {
+      "id": "gdelt-ad536429ae9f8776",
+      "headline": "Carborundum Universal Q4 Results: Consolidated net profit reported at Rs 142.56 cr",
+      "a": "neutral",
+      "b": "positive"
+    },
+    {
+      "id": "gdelt-dab6119ca37951ce",
+      "headline": "Torrent Power eyes Rs 3,000-4,000 cr fundraise through QIP",
+      "a": "positive",
+      "b": "neutral"
+    },
+    {
+      "id": "gdelt-e4a103a26377eecb",
+      "headline": "Fed outlook pushes dollar to 2 1/2 month peak; yen under pressure",
+      "a": "negative",
+      "b": "neutral"
+    }
+  ]
+}

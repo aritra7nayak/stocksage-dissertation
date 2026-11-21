@@ -30,12 +30,19 @@
           "mlflow_run_id": "379b4d329dbe4e41b2c034eaca2c4d9b",
           "mlflow_version": "2",
           "registered_at": "2026-11-11T01:53:43+00:00",
-          "stage": "shadow",
-          "gates": []
+          "stage": "champion",
+          "gates": [
+            {
+              "at": "2026-11-21T10:39:26+00:00",
+              "passed": true,
+              "against": "baseline",
+              "report": "reports/gate_sentiment_v2_1.json"
+            }
+          ]
         }
       ],
-      "champion": null,
-      "shadow": 2,
+      "champion": 2,
+      "shadow": null,
       "history": [
         {
           "at": "2026-11-11T01:53:41+00:00",
@@ -51,9 +58,25 @@
           "at": "2026-11-11T01:53:54+00:00",
           "action": "shadow",
           "version": 2
+        },
+        {
+          "at": "2026-11-21T10:39:26+00:00",
+          "action": "gate",
+          "version": 2,
+          "passed": true,
+          "against": "baseline"
+        },
+        {
+          "at": "2026-11-21T10:39:40+00:00",
+          "action": "promote",
+          "version": 2,
+          "gate": "reports/gate_sentiment_v2_1.json"
         }
       ],
-      "test_set_looks": 0
+      "test_set_looks": 1,
+      "lineage": [
+        2
+      ]
     },
     "events": {
       "versions": [
@@ -70,7 +93,14 @@
           "mlflow_version": "1",
           "registered_at": "2026-11-11T01:53:45+00:00",
           "stage": "candidate",
-          "gates": []
+          "gates": [
+            {
+              "at": "2026-11-21T10:39:51+00:00",
+              "passed": false,
+              "against": "keyword",
+              "report": "reports/gate_events_v1_1.json"
+            }
+          ]
         }
       ],
       "champion": null,
@@ -80,9 +110,16 @@
           "at": "2026-11-11T01:53:45+00:00",
           "action": "register",
           "version": 1
+        },
+        {
+          "at": "2026-11-21T10:39:51+00:00",
+          "action": "gate",
+          "version": 1,
+          "passed": false,
+          "against": "keyword"
         }
       ],
-      "test_set_looks": 0
+      "test_set_looks": 1
     }
   }
 }

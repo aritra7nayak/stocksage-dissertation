@@ -7,8 +7,8 @@ stages:
     deps:
     - path: data/corpus/labelled.jsonl
       hash: md5
-      md5: 24e67356af731a57b686ff53c478f821
-      size: 1848584
+      md5: bdc465ae1fa2774e2c52c827f6f73ea1
+      size: 2071999
     - path: research/train_classifier.py
       hash: md5
       md5: 9c6d93abec77292a9685772499c44c2f
@@ -25,8 +25,8 @@ stages:
     outs:
     - path: models/finbert-in
       hash: md5
-      md5: 25aa0ff21e557712fe7eebd4bec73c51.dir
-      size: 438915373
+      md5: 2a11b8e6af0dc74fb129ce8906c9e507.dir
+      size: 438934154
       nfiles: 8
   train_deberta_sentiment:
     cmd: python -m research.train_classifier --task sentiment --model 
@@ -36,8 +36,8 @@ stages:
     deps:
     - path: data/corpus/labelled.jsonl
       hash: md5
-      md5: 24e67356af731a57b686ff53c478f821
-      size: 1848584
+      md5: bdc465ae1fa2774e2c52c827f6f73ea1
+      size: 2071999
     - path: research/train_classifier.py
       hash: md5
       md5: 9c6d93abec77292a9685772499c44c2f
@@ -54,8 +54,8 @@ stages:
     outs:
     - path: models/deberta-sentiment
       hash: md5
-      md5: 7411d1d2d8441105c3feb8af6c5cf8f2.dir
-      size: 748854809
+      md5: 67f139474d82b1b6fb82ba6e2c842449.dir
+      size: 748873585
       nfiles: 9
   train_deberta_events:
     cmd: python -m research.train_classifier --task events --model 
@@ -65,8 +65,8 @@ stages:
     deps:
     - path: data/corpus/labelled.jsonl
       hash: md5
-      md5: 24e67356af731a57b686ff53c478f821
-      size: 1848584
+      md5: bdc465ae1fa2774e2c52c827f6f73ea1
+      size: 2071999
     - path: research/train_classifier.py
       hash: md5
       md5: 9c6d93abec77292a9685772499c44c2f
@@ -83,32 +83,31 @@ stages:
     outs:
     - path: models/deberta-events
       hash: md5
-      md5: 3bbc5a4fdb88205028e0bb2e6d52a8cc.dir
-      size: 748870972
+      md5: 9b457a099f661e26cbcb90d0b132c7b2.dir
+      size: 748891184
       nfiles: 9
   evaluate:
     cmd: python -m research.evaluate --gold data/corpus/labelled.jsonl --split 
       test --finbert --pred finbert_in=models/finbert-in/predictions_test.jsonl 
       --pred deberta_in=models/deberta-sentiment/predictions_test.jsonl --pred 
-      deberta_events=models/deberta-events/predictions_test.jsonl 
-      --allow-partial-test
+      deberta_events=models/deberta-events/predictions_test.jsonl
     deps:
     - path: data/corpus/labelled.jsonl
       hash: md5
-      md5: 24e67356af731a57b686ff53c478f821
-      size: 1848584
+      md5: bdc465ae1fa2774e2c52c827f6f73ea1
+      size: 2071999
     - path: models/deberta-events/predictions_test.jsonl
       hash: md5
-      md5: e226576f2e2bc63ec630e2e9f46a5c19
-      size: 7553
+      md5: 37dbc71db5312ed78a4e772fb6369d52
+      size: 27737
     - path: models/deberta-sentiment/predictions_test.jsonl
       hash: md5
-      md5: 13edf6667b534c63fc1c276ed142e2d6
-      size: 7065
+      md5: 022606f0e5362060087a82e44c0db4eb
+      size: 25811
     - path: models/finbert-in/predictions_test.jsonl
       hash: md5
-      md5: 72034ca853a6cbbd7a8ab5d6feed51d6
-      size: 7067
+      md5: 43c7673b4cf61577cdbd28f3d3e16408
+      size: 25819
     - path: research/baselines.py
       hash: md5
       md5: 8cefd0b670491838a7923f80619efae8
@@ -124,9 +123,9 @@ stages:
     outs:
     - path: reports/eval_test.json
       hash: md5
-      md5: 4c6885a2e8632997be24191b4dd5c5fe
-      size: 8310
+      md5: 3121d2c104cd4ed045ddcbe8c436106d
+      size: 8360
     - path: reports/eval_test.md
       hash: md5
-      md5: 0b9077e74aa073bd515c547a09eb5eaa
+      md5: f0dc413b62b8eedec82bcaa5ea27a2e6
       size: 657

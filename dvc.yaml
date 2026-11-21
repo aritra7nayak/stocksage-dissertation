@@ -49,13 +49,12 @@ stages:
       - models/deberta-events
 
   evaluate:
-    # --allow-partial-test while the test split is still being reviewed; drop it
-    # once all 450 test rows are labelled (the report marks the run as partial).
+    # The full frozen test split is labelled, so evaluation is strict: it fails
+    # if any test row is missing (no --allow-partial-test).
     cmd: python -m research.evaluate --gold data/corpus/labelled.jsonl --split test --finbert
       --pred finbert_in=models/finbert-in/predictions_test.jsonl
       --pred deberta_in=models/deberta-sentiment/predictions_test.jsonl
       --pred deberta_events=models/deberta-events/predictions_test.jsonl
-      --allow-partial-test
     deps:
       - data/corpus/labelled.jsonl
       - research/evaluate.py
