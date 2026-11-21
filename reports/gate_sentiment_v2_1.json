@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "checks": {
+    "macro_f1_improves": true,
+    "bootstrap_ci_excludes_zero": true,
+    "mcnemar_significant": true,
+    "no_class_regression": true
+  },
+  "failed": [],
+  "champion_macro_f1": 0.6564,
+  "candidate_macro_f1": 0.7451,
+  "paired_bootstrap": {
+    "delta": 0.0887,
+    "low": 0.0378,
+    "high": 0.1408,
+    "p_not_better": 0.0005
+  },
+  "mcnemar": {
+    "b": 49,
+    "c": 86,
+    "chi2": 9.6,
+    "p_value": 0.001946
+  },
+  "per_class_champion": {
+    "negative": 0.6528,
+    "neutral": 0.6684,
+    "positive": 0.6481
+  },
+  "per_class_candidate": {
+    "negative": 0.7907,
+    "neutral": 0.7472,
+    "positive": 0.6975
+  },
+  "class_drops": {},
+  "thresholds": {
+    "min_delta": 0.0,
+    "alpha": 0.05,
+    "max_class_drop": 0.05
+  },
+  "task": "sentiment",
+  "candidate": 2,
+  "against": "baseline",
+  "n_test": 450,
+  "test_fingerprint": "49e54e99b9291b481923c4db5d0a237c6f11868cd9daf18e57c8489eced98cfb",
+  "gold_sha256": "0349b44c15c7c82a8f3e74114c99368667730a9a08d1c2de1e3743b1798e12d8",
+  "at": "2026-11-21T10:39:26+00:00",
+  "test_set_look": 1
+}

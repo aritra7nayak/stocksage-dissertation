@@ -118,3 +118,5 @@ mobile/web/tests/parity/*.json
 !/reports/eval_test.json
 !/reports/eval_test.md
 !/reports/agreement.json
+!/reports/gate_*.md
+!/reports/gate_*.json

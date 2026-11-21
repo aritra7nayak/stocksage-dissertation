@@ -1,0 +1,62 @@
+{
+  "passed": false,
+  "checks": {
+    "macro_f1_improves": true,
+    "bootstrap_ci_excludes_zero": true,
+    "mcnemar_significant": true,
+    "no_class_regression": false
+  },
+  "failed": [
+    "no_class_regression"
+  ],
+  "champion_macro_f1": 0.1485,
+  "candidate_macro_f1": 0.4697,
+  "paired_bootstrap": {
+    "delta": 0.3212,
+    "low": 0.2643,
+    "high": 0.3824,
+    "p_not_better": 0.0
+  },
+  "mcnemar": {
+    "b": 25,
+    "c": 214,
+    "chi2": 147.8828,
+    "p_value": 0.0
+  },
+  "per_class_champion": {
+    "regulatory_action": 0.0588,
+    "fraud_default": 0.3333,
+    "monetary_policy": 0.0,
+    "earnings_guidance": 0.1579,
+    "corporate_action": 0.0,
+    "macro_geopolitical": 0.1982,
+    "flows": 0.0,
+    "other": 0.4396
+  },
+  "per_class_candidate": {
+    "regulatory_action": 0.6,
+    "fraud_default": 0.0,
+    "monetary_policy": 0.0,
+    "earnings_guidance": 0.8936,
+    "corporate_action": 0.798,
+    "macro_geopolitical": 0.7459,
+    "flows": 0.0,
+    "other": 0.7203
+  },
+  "class_drops": {
+    "fraud_default": 0.3333
+  },
+  "thresholds": {
+    "min_delta": 0.0,
+    "alpha": 0.05,
+    "max_class_drop": 0.05
+  },
+  "task": "events",
+  "candidate": 1,
+  "against": "keyword",
+  "n_test": 450,
+  "test_fingerprint": "49e54e99b9291b481923c4db5d0a237c6f11868cd9daf18e57c8489eced98cfb",
+  "gold_sha256": "0349b44c15c7c82a8f3e74114c99368667730a9a08d1c2de1e3743b1798e12d8",
+  "at": "2026-11-21T10:39:51+00:00",
+  "test_set_look": 1
+}
