@@ -33,7 +33,7 @@ All model results are on the **full frozen test split: 450 headlines, every one 
 - **Guidelines:** `research/annotation/GUIDELINES.md` (v1.4): six fields (sentiment, events, severity, scope, companies, sectors), with a decisions log recording every methodology change.
 - **Annotation tool:** the **Research** tab in the app: buttons and search instead of free text, server-side validation of every rule, annotator roles A/B, time per row recorded.
 - **Labelling design** (decisions log v1.2–v1.4):
-  - All rows were pre-filled by an LLM (Claude), with company symbols verified against the NSE list.
+  - **LLM-assisted pre-annotation:** a large language model drafted all six fields for every row from the guidelines; company symbols were verified against the NSE list. Every evaluation label was then reviewed and corrected by a human.
   - **Test split (450):** reviewed by annotator A (Aritra Nayak). This is the answer key.
   - **Agreement subset (120 seeded test rows):** reviewed independently by annotator B (Alok Nayak).
   - **Train and dev:** LLM labels used as silver training data (`origin = llm_prelabel`), never used for evaluation.
@@ -129,7 +129,7 @@ docker compose --profile monitoring up -d          # Prometheus + Grafana
 
 ## 6. Limitations to state in the report
 
-1. **Pre-filled annotation.** Every row was pre-filled by an LLM. Kappa is therefore *pre-label-assisted* agreement and higher than blank-sheet agreement would be. Sentiment is the informative figure: both annotators changed it (A 9.7%, B 14.2% of rows). Events, scope and companies were almost never changed by either annotator, so their near-1.0 kappas mostly reflect the shared draft.
+1. **LLM-assisted pre-annotation.** Annotators reviewed and corrected model drafts rather than labelling from blank. Kappa is therefore *pre-annotation-assisted* agreement and higher than blank-sheet agreement would be. Sentiment is the informative figure: both annotators changed it (A 9.7%, B 14.2% of rows). Events, scope and companies were almost never changed by either annotator, so their near-1.0 kappas mostly reflect the shared draft.
 2. **The gold test labels are human-corrected LLM drafts,** not independent human labels. Change rates per field are reported by `import-db`.
 3. **Silver training data.** Train/dev labels are LLM-generated; a human-only ablation (`build_sample gold --no-silver`) is available but not yet run.
 4. **Rare event classes** (fraud, monetary policy, flows) have very few test examples; their per-class F1 has wide uncertainty, and the events model is not yet deployable (gate failure).

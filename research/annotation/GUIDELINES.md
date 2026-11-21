@@ -91,17 +91,17 @@ One or more of: `IT`, `Banking & Finance`, `Pharma & Healthcare`, `Oil & Gas`, `
 ## Process
 
 1. **Calibration.** Both annotators label the same 50 headlines (taken from the `train` split), then compare and discuss every disagreement. Add any new rule to this file under *Decisions log* and increase the version number. Calibration items are excluded from the agreement statistics.
-2. **Independent labelling.** Annotator A labels the full sample. Annotator B labels only B's subset (120 test rows since v1.4; the Research tab shows B only those), **without seeing A's labels**. Both annotators start from the same LLM pre-label (see below), and do not discuss rows until both have finished.
+2. **Independent labelling.** Annotator A labels the full sample. Annotator B labels only B's subset (120 test rows since v1.4; the Research tab shows B only those), **without seeing A's labels**. Both annotators start from the same LLM draft (see *LLM-assisted pre-annotation*), and do not discuss rows until both have finished.
 3. **Agreement.** Run `python -m research.agreement` on the two files. Report Cohen's kappa per field. Below 0.6 on sentiment means the guidelines need another calibration round.
 4. **Adjudication.** Disagreements in the double subset are settled by discussion. The settled label becomes gold, and the original pair is kept for the kappa calculation.
 
-### LLM pre-labels
+### LLM-assisted pre-annotation
 
-From version 1.2, **every row is pre-filled for both annotators**, in all six fields, by an LLM (Claude, model `claude-opus-5-5`) that applied these guidelines. Company symbols were checked against the NSE list. The file is `data/annotation/prelabels.jsonl`; the earlier Gemini pre-labels for 449 rows are kept in `prelabels_gemini.jsonl` for comparison.
+From version 1.2, **every row starts from a draft label** in all six fields, written by a large language model that applied these guidelines (the model identifier is recorded per row in `data/annotation/prelabels.jsonl`). Company symbols were checked against the NSE list. An earlier draft for 449 rows from a second LLM is kept in `prelabels_gemini.jsonl` for comparison.
 
 - Each pre-label must be **reviewed** before it counts. Read the headline first, then check every field, including the company name shown next to each symbol. In the Research tab, saving the row is the review. Reviewed rows are stored with `origin` = `human_verified`, together with the pre-label that was shown.
-- Judge every pre-filled row as if it were blank. Do not keep a label just because it is already there.
-- Pre-filled labels are wrong often enough to matter: on the 449 rows both LLMs labelled, they agreed on sentiment only 77% of the time.
+- Judge every drafted row as if it were blank. Do not keep a label just because it is already there.
+- Drafts are wrong often enough to matter: on the 449 rows both LLMs labelled, they agreed on sentiment only 77% of the time.
 - **What this means for the results.** Both annotators review the same pre-label, so kappa on the double subset measures agreement *between two people correcting the same draft*. It will be higher than agreement from blank sheets. The write-up must say so and also report, for each annotator, how often they changed each field (`import-db` prints this). The gold test labels are LLM-drafted and human-corrected, which also must be stated.
 - A row you labelled before v1.2 keeps the pre-label it was shown then (or none).
 
@@ -111,6 +111,6 @@ From version 1.2, **every row is pre-filled for both annotators**, in all six fi
 |---|---|---|
 | 1.0 | 2026-11 | Initial rules |
 | 1.1 | 2026-11-09 | Section 4: unlisted, foreign and group-only subjects are scope `none` (`company` needs a linked NSE company). Section 5: IPO rule. Labelling moved to the Research tab. Prompted by a check of the first 449 pre-labels: 34 had `company` scope for unlisted or foreign firms |
-| 1.2 | 2026-11-09 | All 3,000 rows pre-filled for both annotators, all six fields, by Claude (`claude-opus-5-5`); the test split and the double subset are no longer blank. Chosen by the researcher to reduce the labelling load. Consequences, to be reported: kappa is pre-label-assisted agreement, and gold labels are human-corrected LLM drafts. Per-annotator change rates are reported with every export. |
+| 1.2 | 2026-11-09 | LLM-assisted pre-annotation for all 3,000 rows and both annotators, all six fields (model id recorded in `prelabels.jsonl`); the test split and the double subset are no longer blank. Chosen by the researcher to reduce the labelling load. Consequences, to be reported: kappa is pre-label-assisted agreement, and gold labels are human-corrected LLM drafts. Per-annotator change rates are reported with every export. |
 | 1.3 | 2026-11-10 | Train and dev use the LLM labels as silver (`origin` = `llm_prelabel`; `build_sample gold`). Human review is needed only for the test split (annotator A, the answer key) and the double subset (annotator B, for kappa); the Research tab lists these under **Needs review**. Based on A's first 145 reviewed rows: 17% changed, mostly sentiment. The human-only variant (`--no-silver`) is kept for an ablation. |
-| 1.4 | 2026-11-15 | Annotator B is Alok Nayak (replacing the original second annotator). B labels **120 test rows**, drawn at random with seed 20261115 (`build_sample b-subset`, `data/annotation/b_subset.json`), instead of the 300-row double subset. Rows are pre-filled, as for A. Kappa is therefore computed on test rows and is pre-label-assisted agreement (see *LLM pre-labels*). B finishes without discussing any row with A. |
+| 1.4 | 2026-11-15 | Annotator B is Alok Nayak (replacing the original second annotator). B labels **120 test rows**, drawn at random with seed 20261115 (`build_sample b-subset`, `data/annotation/b_subset.json`), instead of the 300-row double subset. Rows start from the LLM draft, as for A. Kappa is therefore computed on test rows and is pre-label-assisted agreement (see *LLM-assisted pre-annotation*). B finishes without discussing any row with A. |

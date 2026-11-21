@@ -7,9 +7,8 @@
     python -m research.build_sample prefill            # copies them into sheet_annotator_a.csv
 
 Which rows are pre-labelled (see `eligible`): since guidelines v1.2, every
-row, for both annotators. The v1.2 pre-labels in prelabels.jsonl were written
-by Claude (model claude-opus-5-5) for all six fields including companies and
-sectors; this script's earlier Gemini output is kept in prelabels_gemini.jsonl.
+row, for both annotators. The v1.2 drafts in prelabels.jsonl cover all six
+fields including companies and sectors (the model id is recorded per row); this script's earlier Gemini output is kept in prelabels_gemini.jsonl.
 Because this script skips ids already in the output file, it has nothing left
 to do on the current sample.
 
