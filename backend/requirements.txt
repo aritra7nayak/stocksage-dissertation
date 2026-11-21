@@ -26,7 +26,8 @@ requests==2.34.2               # NSE catalogue + FII/DII endpoints
 
 # Sentiment — install torch SEPARATELY with CUDA (see README), then:
 transformers==4.51.3
-sentencepiece==0.2.0           # DeBERTa-v3 tokenizer (fine-tuned models served from models/serving.json)
+pypdf==5.4.0                   # assistant knowledge base reads the StockSage guides in docs/
+sentencepiece==0.2.0          # DeBERTa-v3 tokenizer (fine-tuned models served from models/serving.json)
 
 # Auth
 pyjwt==2.10.1

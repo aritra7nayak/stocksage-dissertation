@@ -277,6 +277,15 @@ async def my_portfolio(ctx: Ctx) -> dict:
     return s | {"source": "your StockSage portfolio", "as_of": _now()}
 
 
+async def knowledge_search(ctx: Ctx, query: str, k: int = 3) -> dict:
+    """Concept explanations from the knowledge base (notes and the StockSage guides)."""
+    from app.assistant.knowledge import default_kb
+    hits = default_kb().search(query, k=max(1, min(int(k or 3), 5)))
+    if not hits:
+        return {"error": "nothing in the knowledge base matches", "query": query}
+    return {"query": query, "results": hits, "source": "StockSage knowledge base"}
+
+
 # ── Registry ───────────────────────────────────────────────────────────────
 @dataclass
 class Tool:
@@ -316,6 +325,11 @@ TOOLS: dict[str, Tool] = {
                             "days": {"type": "integer", "description": "Look-back, 1-90 days (default 7)"},
                             "only_bad": {"type": "boolean", "description": "Only adverse news"}}, [])),
     "my_portfolio": Tool(my_portfolio, "The user's own holdings, capital and profit/loss.", _p({}, [])),
+    "knowledge_search": Tool(knowledge_search, "Explanations of market concepts: options (Greeks, IV, PCR, max "
+                             "pain, strategies), technical indicators, fundamental ratios, Indian market rules and "
+                             "taxes, risk management, and how every StockSage screen and rule works.",
+                             _p({"query": {"type": "string", "description": "The concept to explain"}},
+                                ["query"])),
 }
 
 
