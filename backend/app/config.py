@@ -68,6 +68,15 @@ class Settings(BaseSettings):
     # annotation/prelabels.jsonl ("" = data/ at the repo root).
     research_data_dir: str = ""
 
+    # ── Assistant (Module D) ─────────────────────────────────────────────
+    # An OpenAI-compatible chat server: llama.cpp's llama-server running the
+    # StockSage small language model locally (see deploy/slm/README.md).
+    assistant_llm_url: str = "http://127.0.0.1:8081/v1"
+    assistant_model: str = "stocksage-slm"
+    assistant_max_rounds: int = 4          # tool-calling rounds before the model must answer
+    assistant_temperature: float = 0.3
+    assistant_timeout_s: float = 180.0
+
     # ── Deployment ──────────────────────────────────────────────────────
     # Comma-separated list of browser origins allowed to call this API.
     # In production set this to your frontend URL, e.g.

@@ -42,6 +42,7 @@ from app.trades_router import router as trades_router
 from app.options.router import router as options_router
 from app.monitoring import router as metrics_router
 from app.research_router import router as research_router
+from app.assistant.router import router as assistant_router
 
 _LOG_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=_LOG_FORMAT)
@@ -175,6 +176,7 @@ app.include_router(insights_router, dependencies=_protected)
 app.include_router(trades_router, dependencies=_protected)
 app.include_router(options_router, dependencies=_protected)
 app.include_router(research_router, dependencies=_protected)
+app.include_router(assistant_router, dependencies=_protected)
 # Prometheus scrape endpoint: aggregate counters only, optional METRICS_TOKEN.
 app.include_router(metrics_router)
 
